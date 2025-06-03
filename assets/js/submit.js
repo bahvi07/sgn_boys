@@ -50,6 +50,21 @@ courseSelect.addEventListener("change", updateFeeAndQR);
 yearSelect.addEventListener("change", updateFeeAndQR);
 
 }
+
+// Shift Focus to Next filed 
+const inputs = document.querySelectorAll('#admissionForm input, #admissionForm textarea');
+inputs.forEach((input,index)=>{
+input.addEventListener('keydown',(e)=>{
+if(e.key==='Enter'){
+  e.preventDefault();
+  const nextInput=inputs[index+1];
+  if(nextInput){
+    nextInput.focus();
+  }
+}
+});
+});
+
 // Form Submit using AJAX
 const btn = document.getElementById("submit");
 btn.addEventListener("click", async (e) => {
