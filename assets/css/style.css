@@ -6,7 +6,11 @@ body {
   margin: 0;
   padding: 0;
 }
-
+#download {
+  display: none;
+  margin: 8px 0 8px 8px;
+  padding: 8px 16px;
+}
 .container.bordered {
   border: 1px solid #ccc;
   padding: 30px;

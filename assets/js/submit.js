@@ -67,12 +67,12 @@ if(e.key==='Enter'){
 
 // Form Submit using AJAX
 const btn = document.getElementById("submit");
-btn.addEventListener("click", async (e) => {
+btn.addEventListener("click",(e) => {
   e.preventDefault();
   const form = document.getElementById("admissionForm");
   console.log(form);
-  // Custom validation
-  // 1. Religion
+  //Custom validation
+ //d 1. Religion
   if (!form.religion.value) {
     Swal.fire("Validation Error", "Please select your Religion.", "warning");
     return;
@@ -135,9 +135,36 @@ if(mobile===phone){
   if (!form.checkValidity()) {
     form.reportValidity();
     return;
+  }else{
+            const paymentModal = new bootstrap.Modal(document.getElementById("payModal"), {
+  focus: false,
+}); 
+        setTimeout(() => {
+          paymentModal.show();
+        }, 800);
   }
 
+});
+
+  // Submit Form data with ss
+const submit_ss = document.getElementById('submit_ss');
+submit_ss.addEventListener('click', async (e) => {
+  e.preventDefault();
+  const form = document.getElementById("admissionForm");
   const formData = new FormData(form);
+
+  // Get the payment screenshot file from the modal
+  const pay_ss = document.getElementById('pay_ss');
+  
+  if (!pay_ss.files[0]) {
+    Swal.fire("Payment Error", "Please upload the payment screenshot.", "warning");
+    return;
+  }
+  formData.append('pay_ss', pay_ss.files[0]);
+
+  // Disable submit button and show waiting text
+  submit_ss.disabled = true;
+  submit_ss.textContent = "Please wait...";
 
   try {
     const response = await fetch("admission-form/submit.php", {
@@ -145,25 +172,32 @@ if(mobile===phone){
       body: formData,
     });
     const result = await response.text();
+    console.log("Raw server response:", result); // Add this for debugging
     try {
-      const data = JSON.parse(result);
-      if (data.success === true) {
-        const paymentModal = new bootstrap.Modal(document.getElementById("payModal"), {
-  focus: false,
-}); 
-        setTimeout(() => {
-          paymentModal.show();
-        }, 800);
-      } else {
-        throw new Error(data.message || "Unknown error occurred");
-      }
+        const data = JSON.parse(result);
+        if (data.success === true) {
+          Swal.fire("Success", "Admission Successful", "success");
+          document.getElementById('download').style.display='block';
+        } else {
+          console.error("Server error message:", data.message);
+          Swal.fire({
+            title: "Error",
+            html: `<div style="text-align:left"><b>Reason:</b> ${data.message || "Unknown error occurred"}</div>`,
+            icon: "error"
+          });
+        }
     } catch (e) {
       console.error("Non-JSON response:", result);
-      Swal.fire("Server Error", "Unexpected server response.", "error");
+      Swal.fire("Server Error", "Unexpected server response.<br><pre style='text-align:left'>" + result + "</pre>", "error");
     }
   } catch (error) {
     console.error("Error:", error);
     Swal.fire("Failed", "Failed to submit Form" + error.message, "error");
+  } finally {
+    // Hide the submit button after any response (success or error)
+    submit_ss.style.display = 'none';
+    submit_ss.disabled = false;
+    submit_ss.textContent = "Submit";
   }
 });
 

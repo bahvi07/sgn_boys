@@ -296,7 +296,7 @@ $form_no = 'SGNK-' . time();
     </div>
 
     <div class="form-footer text-center">
-      <button type="button" id="submit" class="btn btn-primary">Submit Application</button>
+      <button type="button" id="submit" class="btn btn-primary">Make Payment</button>
       <button type="reset" class="btn btn-secondary ml-2">Reset Form</button>
     </div>
   </form>
@@ -307,40 +307,26 @@ $form_no = 'SGNK-' . time();
   <div class="modal-dialog">
     <div class="modal-content" style="background: linear-gradient(135deg, #f4f6f8 0%, #e3e9f0 100%); border-radius: 10px; box-shadow: 0 4px 32px rgba(52,152,219,0.15);">
       <div class="modal-header" style="border-bottom: 2px solid #3498db;">
-        <h5 class="modal-title" style="color: #1565c0; font-weight: bold;">Online Fee Payment</h5>
+        <h5 class="modal-title" style="color: #1565c0; font-weight: bold;">SGN Khalsa Online Fee Payment</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center">
-        <!-- <div class="mb-3">
-          <label for="courseSelect" class="form-label" style="font-weight:600;">Select Course</label>
-          <select id="courseSelect" class="form-control mb-2" style="max-width: 300px; margin: 0 auto;">
-            <option value="">-- Select Course --</option>
-            <option value="BA">B.A.</option>
-            <option value="BSc">B.Sc.</option>
-            <option value="BCom">B.Com.</option>
-            <option value="BCA">BCA</option>
-            <option value="BBA">BBA</option>
-            <option value="MA">M.A.</option>
-            <option value="MSc">M.Sc.</option>
-            <option value="MCom">M.Com.</option>
-          </select>
-          <label for="yearSelect" class="form-label" style="font-weight:600;">Select Year</label>
-          <select id="yearSelect" class="form-control mb-3" style="max-width: 300px; margin: 0 auto;">
-            <option value="">-- Select Year --</option>
-            <option value="1">1st Year</option>
-            <option value="2">2nd Year</option>
-            <option value="3">3rd Year</option>
-            <option value="4">4th Year</option>
-          </select>
-        </div> -->
         <div class="mb-3">
-          <img id="qrImage" src="./assets/images/qr.jpg" alt="Scan QR to Pay" style="width:180px; height:180px; border: 4px solid #3498db; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(52,152,219,0.07);">
+          <img id="qrImage" src="./assets//images/pqr.png" alt="Scan QR to Pay" style="width:300px; height:350pxS; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(52,152,219,0.07);">
         </div>
         <div class="mb-3">
           <span id="feeAmount" style="font-size:1.2rem; color:#8e44ad; font-weight:600;">Fee: ₹0</span>
         </div>
+        <div class="mb-3">
+          <label for="pay_ss" class="form-label" style="font-weight:600;">Upload Payment Screenshot (for verification)</label>
+          <input type="file" name="pay_ss" id="pay_ss" class="form-control" accept="image/*" required>
+        </div>
       </div>
       <div class="modal-footer" style="border-top: 1px solid #ddd;">
+        <a href="./admission-form/user_pdf.php?form_no=<?php echo $form_no; ?>" id="download" class="ml-2" download>
+          <i class="fa-solid fa-download"></i> Admission Summary
+        </a>
+        <button type="button" id="submit_ss" class="btn btn-primary">Submit</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close">Close</button>
       </div>
     </div>

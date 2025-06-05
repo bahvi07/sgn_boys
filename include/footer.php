@@ -16,6 +16,10 @@
   <!-- FontAwesome for icons (optional) -->
   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
+  <!-- JPDF for pdf downlaod -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <!-- Your custom script -->
   <script src="./assets/js/submit.js"></script>
 </body>
