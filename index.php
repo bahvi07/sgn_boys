@@ -29,11 +29,11 @@ $form_no = 'SGNK-' . time();
       </div>
       <div class="col-md-4">
         <label for="roll_no">Class Roll No.</label>
-        <input type="text" name="roll_no" id="roll_no" class="form-control" placeholder="Enter Passout Roll No." autofocus required aria-label="Class Roll No.">
+        <input type="text" name="roll_no" id="roll_no" class="form-control numonly" placeholder="Enter Passout Roll No." autofocus required aria-label="Class Roll No.">
       </div>
       <div class="col-md-4">
         <label for="id_card_no">ID Card No.</label>
-        <input type="text" name="id_card_no" id="id_card_no" class="form-control" placeholder="For Passout Students" aria-label="ID Card No.">
+        <input type="text" name="id_card_no" id="id_card_no" class="form-control numonly" placeholder="For Passout Students" aria-label="ID Card No.">
       </div>
     </div>
     <div class="row mb-3">
@@ -130,11 +130,11 @@ $form_no = 'SGNK-' . time();
     <div class="row mb-3">
       <div class="col-sm-6">
         <label>1. Scholar No. (if any):</label>
-        <input type="text" name="scholar_no" class="form-control">
+        <input type="text" name="scholar_no" class="form-control numonly">
       </div>
       <div class="col-sm-6">
         <label>2. University Enrollment No. (If any):</label>
-        <input type="text" name="enrollment_no" class="form-control">
+        <input type="text" name="enrollment_no" class="form-control numonly">
       </div>
     </div>
 
@@ -155,28 +155,28 @@ $form_no = 'SGNK-' . time();
 
     <div class="mb-3">
       <label>5. Name of Candidate:</label>
-      <input type="text" name="candidate_name" class="form-control" placeholder="Full Name" required aria-label="Name of Candidate">
+      <input type="text" name="candidate_name" class="form-control charonly" placeholder="Full Name" required aria-label="Name of Candidate">
     </div>
 
     <div class="row mb-3">
       <div class="col-md-8">
         <label>6. Father's Name:</label>
-        <input type="text" name="father_name" class="form-control" placeholder="Father's Name" required aria-label="Father's Name">
+        <input type="text" name="father_name" class="form-control charonly" placeholder="Father's Name" required aria-label="Father's Name">
       </div>
       <div class="col-sm-4">
         <label>Occupation:</label>
-        <input type="text" name="father_occupation" class="form-control">
+        <input type="text" name="father_occupation" class="form-control charonly">
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-md-8">
         <label>7. Mother's Name:</label>
-        <input type="text" name="mother_name" class="form-control" placeholder="Mother's Name" required aria-label="Mother's Name">
+        <input type="text" name="mother_name" class="form-control charonly" placeholder="Mother's Name" required aria-label="Mother's Name">
       </div>
       <div class="col-sm-4">
         <label>Occupation:</label>
-        <input type="text" name="mother_occupation" class="form-control">
+        <input type="text" name="mother_occupation" class="form-control charonly">
       </div>
     </div>
 
@@ -194,20 +194,20 @@ $form_no = 'SGNK-' . time();
     <div class="row mb-3">
       <div class="col-md-4">
         <label>C. Whatsapp No.:</label>
-        <input type="tel" name="whatsapp" class="form-control">
+        <input type="tel" name="whatsapp" class="form-control numonly">
       </div>
       <div class="col-md-4">
         <label>Mobile No.:</label>
-        <input type="tel" name="mobile" maxlength="10" class="form-control">
+        <input type="tel" name="mobile" maxlength="10" class="form-control numonly">
       </div>
         <div class="col-md-4">
         <label>D. Parents Mobile No.:</label>
-        <input type="tel" name="parents_mobile" class="form-control" maxlength="10">
+        <input type="tel" name="parents_mobile" class="form-control numonly" maxlength="10">
       </div>
     </div>
     <div class="mb-3">
       <label>8. Name of Institution Last Attended:</label>
-      <input type="text" name="last_institution" class="form-control" placeholder="Institution Name" aria-label="Last Institution Attended">
+      <input type="text" name="last_institution" class="form-control charonly" placeholder="Institution Name" aria-label="Last Institution Attended">
     </div>
 
     <div class="section-title">Details of Previous Exam. Passed</div>
@@ -247,12 +247,12 @@ $form_no = 'SGNK-' . time();
                 <option value="M.Com">M.Com</option>
                 <option value="Other">Other</option>
               </select>
-            <input type="text" placeholder="Other" class="form-control d-none" id="other" name="other">
+            <input type="text" placeholder="Other" class="form-control d-none charonly" id="other" name="other">
             </td>
-            <td><input type="text" name="exam_year" class="form-control"></td>
-            <td><input type="tel" name="exam_sem" class="form-control" maxlength="1" placeholder=""></td>
+            <td><input type="text" name="exam_year" class="form-control numonly"></td>
+            <td><input type="tel" name="exam_sem" class="form-control numonly" maxlength="1" placeholder=""></td>
             <td><input type="text" name="exam_board" class="form-control"></td>
-            <td><input type="text" name="exam_percentage" class="form-control"></td>
+            <td><input type="text" name="exam_percentage" class="form-control numonly"></td>
             <td><input type="text" name="exam_compulsory" class="form-control"></td>
             <td><input type="text" name="exam_optional" class="form-control"></td>
           </tr>

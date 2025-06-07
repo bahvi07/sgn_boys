@@ -253,3 +253,36 @@ close.addEventListener('click', () => {
 });
 
 }
+
+// Char only and Num only input restrictions with SweetAlert2 feedback
+document.querySelectorAll('.charonly').forEach(function(input) {
+  input.addEventListener('input', function(e) {
+    const oldValue = this.value;
+    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+    if (oldValue !== this.value && typeof Swal !== "undefined") {
+      Swal.fire({
+        icon: "warning",
+        title: "Only alphabets allowed",
+        text: "Please enter letters and spaces only.",
+        timer: 1200,
+        showConfirmButton: false
+      });
+    }
+  });
+});
+document.querySelectorAll('.numonly').forEach(function(input) {
+  input.addEventListener('input', function(e) {
+    const oldValue = this.value;
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (oldValue !== this.value && typeof Swal !== "undefined") {
+      Swal.fire({
+        icon: "warning",
+        title: "Only numbers allowed",
+        text: "Please enter digits only.",
+        timer: 1200,
+        showConfirmButton: false
+      });
+    }
+  });
+});
+
