@@ -1,29 +1,3 @@
-// Fee Calculation
-// Example fee structure (should be replaced with real data)
-/*
-const feeStructure = {
-  BA: { 1: 5000, 2: 5200, 3: 5400 },
-  BSc: { 1: 6000, 2: 6200, 3: 6400 },
-  BCom: { 1: 5500, 2: 5700, 3: 5900 },
-  BCA: { 1: 7000, 2: 7200, 3: 7400 },
-  BBA: { 1: 6500, 2: 6700, 3: 6900 },
-  MA: { 1: 8000, 2: 8200 },
-  MSc: { 1: 8500, 2: 8700 },
-  MCom: { 1: 7500, 2: 7700 },
-};
-*/
-
-const courseSelect = document.getElementById("courseSelect");
-const yearSelect = document.getElementById("yearSelect");
-const feeAmount = document.getElementById("feeAmount");
-const qrImage = document.getElementById("qrImage");
-
-function updateFeeAndQR() {
-  // Only show QR, no fee calculation
-  feeAmount.textContent = "";
-  qrImage.src = '../images/qr.jpg';
-}
-
 const streamSelect = document.getElementById("stream");
 const course = document.getElementById("course");
 const other=  document.getElementById('other');
@@ -45,11 +19,6 @@ streamSelect.addEventListener("change", () => {
  
 });
 
-if(courseSelect||yearSelect){
-courseSelect.addEventListener("change", updateFeeAndQR);
-yearSelect.addEventListener("change", updateFeeAndQR);
-
-}
 
 // Shift Focus to Next filed 
 const inputs = document.querySelectorAll('#admissionForm input, #admissionForm textarea');
@@ -67,10 +36,9 @@ if(e.key==='Enter'){
 
 // Form Submit using AJAX
 const btn = document.getElementById("submit");
-btn.addEventListener("click",(e) => {
+btn.addEventListener("click", async (e) => {
   e.preventDefault();
   const form = document.getElementById("admissionForm");
-  console.log(form);
   //Custom validation
  //d 1. Religion
   if (!form.religion.value) {
@@ -135,36 +103,14 @@ if(mobile===phone){
   if (!form.checkValidity()) {
     form.reportValidity();
     return;
-  }else{
-            const paymentModal = new bootstrap.Modal(document.getElementById("payModal"), {
-  focus: false,
-}); 
-        setTimeout(() => {
-          paymentModal.show();
-        }, 800);
   }
 
-});
-
-  // Submit Form data with ss
-const submit_ss = document.getElementById('submit_ss');
-submit_ss.addEventListener('click', async (e) => {
-  e.preventDefault();
-  const form = document.getElementById("admissionForm");
+  // Directly submit form data via AJAX (no modal, no payment screenshot)
   const formData = new FormData(form);
 
-  // Get the payment screenshot file from the modal
-  const pay_ss = document.getElementById('pay_ss');
-  
-  if (!pay_ss.files[0]) {
-    Swal.fire("Payment Error", "Please upload the payment screenshot.", "warning");
-    return;
-  }
-  formData.append('pay_ss', pay_ss.files[0]);
-
   // Disable submit button and show waiting text
-  submit_ss.disabled = true;
-  submit_ss.textContent = "Please wait...";
+  btn.disabled = true;
+  btn.textContent = "Please wait...";
 
   try {
     const response = await fetch("admission-form/submit.php", {
@@ -172,20 +118,43 @@ submit_ss.addEventListener('click', async (e) => {
       body: formData,
     });
     const result = await response.text();
-    console.log("Raw server response:", result); // Add this for debugging
+    //console.log("Raw server response:", result);
     try {
-        const data = JSON.parse(result);
-        if (data.success === true) {
-          Swal.fire("Success", "Admission Successful", "success");
-          document.getElementById('download').style.display='block';
-        } else {
-          console.error("Server error message:", data.message);
-          Swal.fire({
-            title: "Error",
-            html: `<div style="text-align:left"><b>Reason:</b> ${data.message || "Unknown error occurred"}</div>`,
-            icon: "error"
+      const data = JSON.parse(result);
+      if (data.success === true) {
+        Swal.fire("Success", "Admission Successful", "success");
+        // Show and update the download button with the correct form_no
+        const formNo = form.form_no.value;
+        const downloadBtn = document.getElementById('download');
+        downloadBtn.href = `./admission-form/user_pdf.php?form_no=${encodeURIComponent(formNo)}`;
+        downloadBtn.style.display = 'inline-block';
+
+        // --- HIGHLIGHT: Add this block to handle redirect after download ---
+        const backHomeBtn = document.querySelector('.back-home');
+        if (backHomeBtn) {
+          backHomeBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+              icon: "info",
+              title: "Redirecting...",
+              text: "You will be redirected to the home page shortly.",
+              timer: 2000,
+              showConfirmButton: false
+            });
+            setTimeout(function () {
+              window.location.href = "/";
+            }, 2000);
           });
         }
+        // --- END HIGHLIGHT ---
+      } else {
+        console.error("Server error message:", data.message);
+        Swal.fire({
+          title: "Error",
+          html: `<div style="text-align:left"><b>Reason:</b> ${data.message || "Unknown error occurred"}</div>`,
+          icon: "error"
+        });
+      }
     } catch (e) {
       console.error("Non-JSON response:", result);
       Swal.fire("Server Error", "Unexpected server response.<br><pre style='text-align:left'>" + result + "</pre>", "error");
@@ -194,10 +163,8 @@ submit_ss.addEventListener('click', async (e) => {
     console.error("Error:", error);
     Swal.fire("Failed", "Failed to submit Form" + error.message, "error");
   } finally {
-    // Hide the submit button after any response (success or error)
-    submit_ss.style.display = 'none';
-    submit_ss.disabled = false;
-    submit_ss.textContent = "Submit";
+    btn.disabled = false;
+    btn.textContent = "Submit Form";
   }
 });
 
@@ -272,6 +239,7 @@ document.querySelectorAll('.charonly').forEach(function(input) {
 });
 document.querySelectorAll('.numonly').forEach(function(input) {
   input.addEventListener('input', function(e) {
+    
     const oldValue = this.value;
     this.value = this.value.replace(/[^0-9]/g, '');
     if (oldValue !== this.value && typeof Swal !== "undefined") {

@@ -7,9 +7,7 @@ $form_no = 'SGNK-' . time();
 
 <div class="container bordered">
   <!-- Back to Home Button -->
-  <div class="mb-3">
-    <a href="/" class="btn btn-secondary back-home" aria-label="Back to Home">&larr; Back to Home</a>
-  </div>
+ 
 
   <form id="admissionForm" method="post">
     <div class="form-title text-center">
@@ -130,11 +128,11 @@ $form_no = 'SGNK-' . time();
     <div class="row mb-3">
       <div class="col-sm-6">
         <label>1. Scholar No. (if any):</label>
-        <input type="text" name="scholar_no" class="form-control numonly">
+        <input type="text" name="scholar_no" class="form-control">
       </div>
       <div class="col-sm-6">
         <label>2. University Enrollment No. (If any):</label>
-        <input type="text" name="enrollment_no" class="form-control numonly">
+        <input type="text" name="enrollment_no" class="form-control">
       </div>
     </div>
 
@@ -296,41 +294,17 @@ $form_no = 'SGNK-' . time();
     </div>
 
     <div class="form-footer text-center">
-      <button type="button" id="submit" class="btn btn-primary">Make Payment</button>
+      <button type="button" id="submit" class="btn btn-primary">Submit Form</button>
       <button type="reset" class="btn btn-secondary ml-2">Reset Form</button>
+      <a href="./admission-form/user_pdf.php?form_no=<?php echo $form_no; ?>" id="download" class="btn btn-success ml-2" style="display:none;" target="_blank" onclick="setTimeout(function(){ location.reload(); }, 1000);">
+        <i class="fa-solid fa-download"></i> Download Admission PDF
+      </a>
     </div>
+     <div class="mb-3">
+    <a href="/" class="btn btn-secondary back-home" aria-label="Back to Home">&larr; Back to Home</a>
+  </div>
   </form>
 </div>
 
-<!-- Modal For Fee Payment -->
-<div class="modal fade" tabindex="-1" id="payModal">
-  <div class="modal-dialog">
-    <div class="modal-content" style="background: linear-gradient(135deg, #f4f6f8 0%, #e3e9f0 100%); border-radius: 10px; box-shadow: 0 4px 32px rgba(52,152,219,0.15);">
-      <div class="modal-header" style="border-bottom: 2px solid #3498db;">
-        <h5 class="modal-title" style="color: #1565c0; font-weight: bold;">SGN Khalsa Online Fee Payment</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <div class="mb-3">
-          <img id="qrImage" src="./assets//images/pqr.png" alt="Scan QR to Pay" style="width:300px; height:350pxS; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(52,152,219,0.07);">
-        </div>
-        <div class="mb-3">
-          <span id="feeAmount" style="font-size:1.2rem; color:#8e44ad; font-weight:600;">Fee: ₹0</span>
-        </div>
-        <div class="mb-3">
-          <label for="pay_ss" class="form-label" style="font-weight:600;">Upload Payment Screenshot (for verification)</label>
-          <input type="file" name="pay_ss" id="pay_ss" class="form-control" accept="image/*" required>
-        </div>
-      </div>
-      <div class="modal-footer" style="border-top: 1px solid #ddd;">
-        <a href="./admission-form/user_pdf.php?form_no=<?php echo $form_no; ?>" id="download" class="ml-2" download>
-          <i class="fa-solid fa-download"></i> Admission Summary
-        </a>
-        <button type="button" id="submit_ss" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <?php include './include/footer.php'; ?>

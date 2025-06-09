@@ -26,85 +26,228 @@ $result = $stmt->get_result();
 $data = $result->fetch_assoc();
 if (!$data) die("No record found.");
 
-// Build HTML content
+// Check if sections have data
+$hasUGSubjects = false;
+$hasPGSubjects = false;
+$hasInterests = !empty($data['interests']);
+
+// Check UG subjects
+for ($i = 1; $i <= 6; $i++) {
+    if (!empty($data["ug_optional$i"])) {
+        $hasUGSubjects = true;
+        break;
+    }
+}
+
+// Check PG subjects
+for ($i = 1; $i <= 6; $i++) {
+    if (!empty($data["pg_optional$i"])) {
+        $hasPGSubjects = true;
+        break;
+    }
+}
+
+$hasSubjectsSection = $hasUGSubjects || $hasPGSubjects;
+
+// Build HTML content with conditional sections
 $logoPath = $_SERVER['DOCUMENT_ROOT'] . '/admission/assets/images/logo.png';
 $type = pathinfo($logoPath, PATHINFO_EXTENSION);
 $imageData = file_get_contents($logoPath);
 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData);
 
-$html = '<div style="text-align:center;">';
-$html .= '<img src="' . $base64 . '" alt="Icon" style="height:70px;vertical-align:middle;margin-bottom:5px;">';
-$html .= '<h2 style="display:inline-block;vertical-align:middle;margin-left:10px;">SGN Khalsa Admission Form Summary</h2>';
-$html .= '</div>';
+$html = '
+<style>
+    body { font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; }
+    .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+    .logo { height: 60px; vertical-align: middle; }
+    .college-name { font-size: 18px; font-weight: bold; margin: 5px 0; }
+    .form-title { font-size: 16px; font-weight: bold; margin: 10px 0; }
+    .section-header { background-color: #f0f0f0; padding: 8px; font-weight: bold; font-size: 14px; margin: 15px 0 10px 0; border: 1px solid #ccc; }
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    .info-table td { padding: 6px; border: 1px solid #ddd; vertical-align: top; }
+    .info-table .label { font-weight: bold; background-color: #f9f9f9; width: 30%; }
+    .meta-info { display: flex; justify-content: space-between; margin: 15px 0; }
+    .meta-item { flex: 1; text-align: center; border: 1px solid #ccc; padding: 5px; margin: 0 2px; }
+    .exam-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    .exam-table th, .exam-table td { border: 1px solid #333; padding: 6px; text-align: center; }
+    .exam-table th { background-color: #f0f0f0; font-weight: bold; }
+    .subjects-section { display: flex; justify-content: space-between; margin: 10px 0; }
+    .subject-column { flex: 1; margin: 0 5px; }
+    .subject-list { list-style: none; padding: 0; }
+    .subject-list li { padding: 3px 0; border-bottom: 1px dotted #ccc; }
+</style>
 
-// Manual labels for each field
-$fieldLabels = [
-    'form_no' => 'Form No',
-    'admission_year' => 'Admission Year',
-    'roll_no' => 'Roll No',
-    'id_card_no' => 'Id Card No',
-    'religion' => 'Religion',
-    'category' => 'Category',
-    'stream' => 'Stream',
-    'course' => 'Course',
-    'medium' => 'Medium',
-    'scholar_no' => 'Scholar No',
-    'enrollment_no' => 'Enrollment No',
-    'gender' => 'Gender',
-    'dob' => 'Date of Birth',
-    'candidate_name' => 'Candidate Name',
-    'father_name' => 'Father Name',
-    'father_occupation' => 'Father Occupation',
-    'mother_name' => 'Mother Name',
-    'mother_occupation' => 'Mother Occupation',
-    'permanent_address' => 'Permanent Address',
-    'correspondence_address' => 'Correspondence Address',
-    'whatsapp' => 'Whatsapp',
-    'mobile' => 'Mobile',
-    'parents_mobile' => 'Parents Mobile',
-    'last_institution' => 'Last Institution',
-    'exam_name' => 'Exam Name',
-    'exam_year' => 'Exam Year',
-    'exam_sem' => 'Exam Sem',
-    'exam_board' => 'Exam Board',
-    'exam_percentage' => 'Exam Percentage',
-    'exam_compulsory' => 'Exam Compulsory',
-    'exam_optional' => 'Exam Optional',
-    'ug_optional1' => 'UG Optional Subject 1',
-    'ug_optional2' => 'UG Optional Subject 2',
-    'ug_optional3' => 'UG Optional Subject 3',
-    'ug_optional4' => 'UG Optional Subject 4',
-    'ug_optional5' => 'UG Optional Subject 5',
-    'ug_optional6' => 'UG Optional Subject 6',
-    'pg_optional1' => 'PG Optional Subject 1',
-    'pg_optional2' => 'PG Optional Subject 2',
-    'pg_optional3' => 'PG Optional Subject 3',
-    'pg_optional4' => 'PG Optional Subject 4',
-    'pg_optional5' => 'PG Optional Subject 5',
-    'pg_optional6' => 'PG Optional Subject 6',
-    'interests' => 'Interests',
-    'created_at' => 'Time of Form Submission'
-];
+<div class="header">
+    <img src="' . $base64 . '" alt="College Logo" class="logo">
+    <div class="college-name">SRI GURU NANAK KHALSA P.G. COLLEGE</div>
+    <div>SRIGANGANAGAR-335001 (RAJ.)</div>
+    <div class="form-title">ADMISSION FORM</div>
+</div>
 
-// List of all fields to show (except id and pay_ss)
-$fieldsToShow = [
-    'form_no', 'admission_year', 'roll_no', 'id_card_no', 'religion', 'category', 'stream', 'course', 'medium',
-    'scholar_no', 'enrollment_no', 'gender', 'dob', 'candidate_name', 'father_name', 'father_occupation',
-    'mother_name', 'mother_occupation', 'permanent_address', 'correspondence_address', 'whatsapp', 'mobile',
-    'parents_mobile', 'last_institution', 'exam_name', 'exam_year', 'exam_sem', 'exam_board', 'exam_percentage',
-    'exam_compulsory', 'exam_optional', 'ug_optional1', 'ug_optional2', 'ug_optional3', 'ug_optional4',
-    'ug_optional5', 'ug_optional6', 'pg_optional1', 'pg_optional2', 'pg_optional3', 'pg_optional4',
-    'pg_optional5', 'pg_optional6', 'interests', 'created_at'
-];
+<table class="info-table" style="margin-bottom:10px;">
+    <tr>
+        <td class="label">Form No</td>
+        <td>' . htmlspecialchars($data['form_no'] ?? '') . '</td>
+        <td class="label">Admission Year</td>
+        <td>' . htmlspecialchars($data['admission_year'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Roll No</td>
+        <td>' . htmlspecialchars($data['roll_no'] ?? '') . '</td>
+        <td class="label">ID Card No</td>
+        <td>' . htmlspecialchars($data['id_card_no'] ?? '') . '</td>
+    </tr>
+</table>
 
-$html .= '<table border="1" cellpadding="8" cellspacing="0" width="100%">';
-foreach ($fieldsToShow as $field) {
-    $value = isset($data[$field]) ? $data[$field] : '';
-    if (empty($value)) continue; // skip empty/null values
-    $label = $fieldLabels[$field] ?? ucwords(str_replace('_', ' ', $field));
-    $html .= "<tr><td><strong>$label</strong></td><td>$value</td></tr>";
+<div class="section-header">ADMISSION DETAILS</div>
+<table class="info-table">
+    <tr>
+        <td class="label">Religion</td>
+        <td>' . htmlspecialchars($data['religion'] ?? '') . '</td>
+        <td class="label">Category</td>
+        <td>' . htmlspecialchars($data['category'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Stream</td>
+        <td>' . htmlspecialchars($data['stream'] ?? '') . '</td>
+        <td class="label">Course</td>
+        <td>' . htmlspecialchars($data['course'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Medium</td>
+        <td>' . htmlspecialchars($data['medium'] ?? '') . '</td>
+        <td class="label">Scholar No.</td>
+        <td>' . htmlspecialchars($data['scholar_no'] ?? '') . '</td>
+    </tr>
+</table>
+
+<div class="section-header">STUDENT\'S DETAILS</div>
+<table class="info-table">
+    <tr>
+        <td class="label">Name of Candidate</td>
+        <td colspan="3">' . htmlspecialchars($data['candidate_name'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Gender</td>
+        <td>' . htmlspecialchars($data['gender'] ?? '') . '</td>
+        <td class="label">Date of Birth</td>
+        <td>' . htmlspecialchars($data['dob'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Father\'s Name</td>
+        <td>' . htmlspecialchars($data['father_name'] ?? '') . '</td>
+        <td class="label">Occupation</td>
+        <td>' . htmlspecialchars($data['father_occupation'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Mother\'s Name</td>
+        <td>' . htmlspecialchars($data['mother_name'] ?? '') . '</td>
+        <td class="label">Occupation</td>
+        <td>' . htmlspecialchars($data['mother_occupation'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Permanent Address</td>
+        <td>' . nl2br(htmlspecialchars($data['permanent_address'] ?? '')) . '</td>
+        <td class="label">Correspondence Address</td>
+        <td>' . nl2br(htmlspecialchars($data['correspondence_address'] ?? '')) . '</td>
+    </tr>
+    <tr>
+        <td class="label">WhatsApp No.</td>
+        <td>' . htmlspecialchars($data['whatsapp'] ?? '') . '</td>
+        <td class="label">Mobile No.</td>
+        <td>' . htmlspecialchars($data['mobile'] ?? '') . '</td>
+    </tr>
+    <tr>
+        <td class="label">Parents Mobile</td>
+        <td>' . htmlspecialchars($data['parents_mobile'] ?? '') . '</td>
+        <td class="label">Last Institution</td>
+        <td>' . htmlspecialchars($data['last_institution'] ?? '') . '</td>
+    </tr>
+</table>
+
+<div class="section-header">DETAILS OF PREVIOUS EXAM PASSED</div>
+<table class="exam-table">
+    <thead>
+        <tr>
+            <th rowspan="2">Name of Examination</th>
+            <th rowspan="2">Year</th>
+            <th rowspan="2">Semester</th>
+            <th rowspan="2">University/Board</th>
+            <th rowspan="2">% of Marks</th>
+            <th colspan="2">Subjects</th>
+        </tr>
+        <tr>
+            <th>Compulsory</th>
+            <th>Optional</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>' . htmlspecialchars($data['exam_name'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_year'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_sem'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_board'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_percentage'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_compulsory'] ?? '') . '</td>
+            <td>' . htmlspecialchars($data['exam_optional'] ?? '') . '</td>
+        </tr>
+    </tbody>
+</table>';
+
+// Only show SUBJECTS OFFERED section if there are subjects
+if ($hasSubjectsSection) {
+    $html .= '<div class="section-header">SUBJECTS OFFERED</div>
+    <div class="subjects-section">';
+    
+    // Only show UG section if there are UG subjects
+    if ($hasUGSubjects) {
+        $html .= '<div class="subject-column">
+            <h4>UG Optional Subjects:</h4>
+            <ul class="subject-list">';
+        
+        for ($i = 1; $i <= 6; $i++) {
+            $subject = $data["ug_optional$i"] ?? '';
+            if (!empty($subject)) {
+                $html .= '<li>' . htmlspecialchars($subject) . '</li>';
+            }
+        }
+        
+        $html .= '</ul></div>';
+    }
+    
+    // Only show PG section if there are PG subjects
+    if ($hasPGSubjects) {
+        $html .= '<div class="subject-column">
+            <h4>PG Optional Subjects:</h4>
+            <ul class="subject-list">';
+        
+        for ($i = 1; $i <= 6; $i++) {
+            $subject = $data["pg_optional$i"] ?? '';
+            if (!empty($subject)) {
+                $html .= '<li>' . htmlspecialchars($subject) . '</li>';
+            }
+        }
+        
+        $html .= '</ul></div>';
+    }
+    
+    $html .= '</div>';
 }
-$html .= '</table>';
+
+// Only show PREFERENCE OF INTEREST section if there are interests
+if ($hasInterests) {
+    $html .= '<div class="section-header">PREFERENCE OF INTEREST</div>
+    <table class="info-table">
+        <tr>
+            <td class="label">Interests</td>
+            <td>' . htmlspecialchars($data['interests'] ?? '') . '</td>
+        </tr>
+    </table>';
+}
+
+$html .= '<div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+    Form submitted on: ' . htmlspecialchars($data['created_at'] ?? '') . '
+</div>';
 
 // Load & render
 $dompdf->loadHtml($html);
@@ -113,3 +256,4 @@ $dompdf->render();
 
 // Output to browser
 $dompdf->stream("Admission_Form_{$form_no}.pdf", ["Attachment" => true]);
+?>
