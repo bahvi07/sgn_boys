@@ -27,7 +27,7 @@ $form_no = 'SGNK-' . time();
       </div>
       <div class="col-md-4">
         <label for="roll_no">Class Roll No.</label>
-        <input type="text" name="roll_no" id="roll_no" class="form-control numonly" placeholder="Enter Passout Roll No." autofocus required aria-label="Class Roll No.">
+        <input type="text" name="roll_no" id="roll_no" class="form-control numonly" placeholder="Enter Passout Roll No." autofocus aria-label="Class Roll No.">
       </div>
       <div class="col-md-4">
         <label for="id_card_no">ID Card No.</label>
@@ -58,7 +58,7 @@ $form_no = 'SGNK-' . time();
         <label class="form-label">Admission Details:</label>
         <div class="col-md-4 mb-2">
           <label>Stream:</label>
-          <select name="stream" id="stream" class="form-control">
+          <select name="stream" id="stream" class="form-control" required>
             <option value="">-- Select Stream --</option>
             <option value="Arts-Stream">Arts</option>
             <option value="Computer-Stream">Computer</option>
@@ -69,7 +69,7 @@ $form_no = 'SGNK-' . time();
         </div>
         <div class="col-md-4 mb-2">
           <label>Course:</label>
-          <select name="course" id="course" class="form-control" disabled>
+          <select name="course" id="course" class="form-control" disabled required >
             <option value="">-- Select Course --</option>
             <!-- Arts -->
             <optgroup label="Arts" data-stream="Arts-Stream">
@@ -114,7 +114,7 @@ $form_no = 'SGNK-' . time();
 
         <div class="col-md-4 mb-2">
           <label>Medium:</label>
-          <select name="medium" class="form-control">
+          <select name="medium" class="form-control" required>
             <option value="">Select</option>
             <option value="Hindi">HINDI</option>
             <option value="English">ENGLISH</option>
@@ -147,13 +147,13 @@ $form_no = 'SGNK-' . time();
       </div>
       <div class="col-sm-6 mt-2" id="">
         <label>4. Date of Birth:</label>
-        <input type="date" name="dob" class="form-control">
+        <input type="date" name="dob" class="form-control" required>
       </div>
     </div>
 
     <div class="mb-3">
       <label>5. Name of Candidate:</label>
-      <input type="text" name="candidate_name" class="form-control charonly" placeholder="Full Name" required aria-label="Name of Candidate">
+      <input type="text" name="candidate_name" class="form-control charonly" placeholder="Full Name" required aria-label="Name of Candidate" >
     </div>
 
     <div class="row mb-3">
@@ -181,7 +181,7 @@ $form_no = 'SGNK-' . time();
     <div class="row mb-3">
       <div class="col-md-6">
         <label>A. Permanent Address:</label>
-        <textarea name="permanent_address" class="form-control" rows="3"></textarea>
+        <textarea name="permanent_address" class="form-control" rows="3"required></textarea>
       </div>
       <div class="col-md-6">
         <label>B. Address for Correspondence:</label>
@@ -200,12 +200,12 @@ $form_no = 'SGNK-' . time();
       </div>
         <div class="col-md-4">
         <label>D. Parents Mobile No.:</label>
-        <input type="tel" name="parents_mobile" class="form-control numonly" maxlength="10">
+        <input type="tel" name="parents_mobile" class="form-control numonly" maxlength="10" required>
       </div>
     </div>
     <div class="mb-3">
       <label>8. Name of Institution Last Attended:</label>
-      <input type="text" name="last_institution" class="form-control charonly" placeholder="Institution Name" aria-label="Last Institution Attended">
+      <input type="text" name="last_institution" class="form-control charonly" placeholder="Institution Name" aria-label="Last Institution Attended" required>
     </div>
 
     <div class="section-title">Details of Previous Exam. Passed</div>
@@ -230,7 +230,7 @@ $form_no = 'SGNK-' . time();
 
           <tr>
             <td>
-              <select name="last-exam" id="last-exam-detail" class="form-control">
+              <select name="last-exam" id="last-exam-detail" class="form-control" required>
                 <option value="">-- Last Exam --</option>
                 <option value="12th">Sr./Hr. Sec.(10+2)</option>
                 <option value="B.A.">B.A.</option>
@@ -245,14 +245,14 @@ $form_no = 'SGNK-' . time();
                 <option value="M.Com">M.Com</option>
                 <option value="Other">Other</option>
               </select>
-            <input type="text" placeholder="Other" class="form-control d-none charonly" id="other" name="other">
+            <input type="text" placeholder="Other" class="form-control d-none charonly" id="other" name="other" required>
             </td>
-            <td><input type="text" name="exam_year" class="form-control numonly"></td>
+            <td><input type="text" name="exam_year" class="form-control numonly"required></td>
             <td><input type="tel" name="exam_sem" class="form-control numonly" maxlength="1" placeholder=""></td>
-            <td><input type="text" name="exam_board" class="form-control"></td>
-            <td><input type="text" name="exam_percentage" class="form-control numonly"></td>
-            <td><input type="text" name="exam_compulsory" class="form-control"></td>
-            <td><input type="text" name="exam_optional" class="form-control"></td>
+            <td><input type="text" name="exam_board" class="form-control"required></td>
+            <td><input type="text" name="exam_percentage" class="form-control numonly"required></td>
+            <td><input type="text" name="exam_compulsory" class="form-control"required></td>
+            <td><input type="text" name="exam_optional" class="form-control"required></td>
           </tr>
         </tbody>
       </table>
@@ -296,9 +296,10 @@ $form_no = 'SGNK-' . time();
     <div class="form-footer text-center">
       <button type="button" id="submit" class="btn btn-primary">Submit Form</button>
       <button type="reset" class="btn btn-secondary ml-2">Reset Form</button>
-      <a href="./admission-form/user_pdf.php?form_no=<?php echo $form_no; ?>" id="download" class="btn btn-success ml-2" style="display:none;" target="_blank" onclick="setTimeout(function(){ location.reload(); }, 1000);">
-        <i class="fa-solid fa-download"></i> Download Admission PDF
-      </a>
+     <a href="./admission-form/user_pdf.php?form_no=<?php echo $form_no; ?>" id="download" class="btn btn-success ml-2" style="display:none;">
+  <i class="fa-solid fa-download"></i> Download Admission PDF
+</a>
+
     </div>
      <div class="mb-3">
     <a href="/" class="btn btn-secondary back-home" aria-label="Back to Home">&larr; Back to Home</a>
@@ -308,3 +309,18 @@ $form_no = 'SGNK-' . time();
 
 
 <?php include './include/footer.php'; ?>
+<script>
+$('#submit').on('click', function(e) {
+    e.preventDefault();
+    var form = $('#admissionForm');
+    $.ajax({
+        url: './admission-form/submit.php',
+        type: 'POST',
+        data: form.serialize(), // This will include checked checkboxes
+        dataType: 'json',
+        success: function(response) {
+            // ...existing code...
+        }
+    });
+});
+</script>

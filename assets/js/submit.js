@@ -39,6 +39,15 @@ const btn = document.getElementById("submit");
 btn.addEventListener("click", async (e) => {
   e.preventDefault();
   const form = document.getElementById("admissionForm");
+
+  // Highlight empty required fields
+  const firstInvalid = highlightEmptyRequiredFields(form);
+  if (firstInvalid) {
+    firstInvalid.focus();
+    Swal.fire("Validation Error", "Please fill all required fields.", "warning");
+    return;
+  }
+
   //Custom validation
  //d 1. Religion
   if (!form.religion.value) {
@@ -253,4 +262,25 @@ document.querySelectorAll('.numonly').forEach(function(input) {
     }
   });
 });
+
+// Add red border to empty required fields on submit and remove on input
+function highlightEmptyRequiredFields(form) {
+  const requiredFields = form.querySelectorAll('[required]');
+  let firstInvalid = null;
+  requiredFields.forEach(field => {
+    if (!field.value.trim()) {
+      field.classList.add('border', 'border-danger');
+      if (!firstInvalid) firstInvalid = field;
+    } else {
+      field.classList.remove('border', 'border-danger');
+    }
+    // Remove red border on input/change
+    field.addEventListener('input', function() {
+      if (this.value.trim()) {
+        this.classList.remove('border', 'border-danger');
+      }
+    });
+  });
+  return firstInvalid;
+}
 

@@ -1,5 +1,5 @@
 <?php
-require 'C:\\xampp\\vendor\\autoload.php';
+require 'vendor/autoload.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -11,7 +11,8 @@ $options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
 
 // DB connection
-$mysqli = new mysqli("localhost", "root", "", "sgn_boys_db");
+$mysqli = new mysqli("localhost", "sgn_user", "DKC9=x.KLH&-", "sgn_boys_db");
+
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
@@ -47,7 +48,7 @@ for ($i = 1; $i <= 6; $i++) {
     }
 }
 
-$hasSubjectsSection = $hasUGSubjects || $hasPGSubjects;
+$hasSubjectsSection = !empty($data['comp_sub']) || $hasUGSubjects || $hasPGSubjects;
 
 // Build HTML content with conditional sections
 $logoPath = $_SERVER['DOCUMENT_ROOT'] . '/admission/assets/images/logo.png';
@@ -198,41 +199,50 @@ $html = '
 if ($hasSubjectsSection) {
     $html .= '<div class="section-header">SUBJECTS OFFERED</div>
     <div class="subjects-section">';
-    
-    // Only show UG section if there are UG subjects
+
+    // ✅ Compulsory UG Subjects
+    if (!empty($data['comp_sub'])) {
+        $compSubs = explode(',', $data['comp_sub']); // Convert back to array
+        $html .= '<div class="subject-column">
+            <h4>UG Compulsory Subjects:</h4>
+            <ul class="subject-list">';
+        foreach ($compSubs as $sub) {
+            $html .= '<li>' . htmlspecialchars(trim($sub)) . '</li>';
+        }
+        $html .= '</ul></div>';
+    }
+
+    // ✅ UG Optional Subjects
     if ($hasUGSubjects) {
         $html .= '<div class="subject-column">
             <h4>UG Optional Subjects:</h4>
             <ul class="subject-list">';
-        
         for ($i = 1; $i <= 6; $i++) {
             $subject = $data["ug_optional$i"] ?? '';
             if (!empty($subject)) {
                 $html .= '<li>' . htmlspecialchars($subject) . '</li>';
             }
         }
-        
         $html .= '</ul></div>';
     }
-    
-    // Only show PG section if there are PG subjects
+
+    // ✅ PG Optional Subjects
     if ($hasPGSubjects) {
         $html .= '<div class="subject-column">
             <h4>PG Optional Subjects:</h4>
             <ul class="subject-list">';
-        
         for ($i = 1; $i <= 6; $i++) {
             $subject = $data["pg_optional$i"] ?? '';
             if (!empty($subject)) {
                 $html .= '<li>' . htmlspecialchars($subject) . '</li>';
             }
         }
-        
         $html .= '</ul></div>';
     }
-    
-    $html .= '</div>';
+
+    $html .= '</div>'; // End subjects-section
 }
+
 
 // Only show PREFERENCE OF INTEREST section if there are interests
 if ($hasInterests) {

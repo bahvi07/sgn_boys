@@ -1,5 +1,5 @@
 <?php
-require 'C:\\xampp\\vendor\\autoload.php';
+require 'vendor/autoload.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -7,7 +7,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 header("Content-Type:application/json");
-$conn=new mysqli("localhost","root","","sgn_boys_db");
+$conn=new mysqli("localhost", "sgn_user", "DKC9=x.KLH&-", "sgn_boys_db");
+
 if($conn->connect_error){
     die("connection failed".$conn->connect_error);
 }
@@ -45,33 +46,34 @@ try {
     $parents_mobile = $_POST['parents_mobile'] ?? '';
     $last_institution = $_POST['last_institution'] ?? '';
 
-    // Insert into admissions table (remove pay_ss field)
-    $fields = [
-        'form_no', 'admission_year', 'roll_no', 'id_card_no', 'religion', 'category', 'stream', 'course', 'medium', 'scholar_no', 'enrollment_no', 'gender', 'dob', 'candidate_name', 'father_name', 'father_occupation', 'mother_name', 'mother_occupation', 'permanent_address', 'correspondence_address', 'whatsapp', 'mobile', 'parents_mobile', 'last_institution', 'exam_name', 'exam_year', 'exam_sem', 'exam_board', 'exam_percentage', 'exam_compulsory', 'exam_optional',
-        'ug_optional1', 'ug_optional2', 'ug_optional3', 'ug_optional4', 'ug_optional5', 'ug_optional6',
-        'pg_optional1', 'pg_optional2', 'pg_optional3', 'pg_optional4', 'pg_optional5', 'pg_optional6',
-        'interests'
-    ];
-    $values = [];
-    foreach ($fields as $field) {
-        if ($field === 'interests') {
-            $values[] = isset($_POST['interests']) ? implode(',', $_POST['interests']) : '';
-        } elseif ($field === 'exam_name') {
-            if (isset($_POST['last-exam']) && $_POST['last-exam'] === 'Other' && !empty($_POST['other'])) {
-                $values[] = $_POST['other'];
-            } else {
-                $values[] = $_POST['last-exam'] ?? '';
-            }
-        } elseif (strpos($field, 'ug_optional') === 0) {
-            $index = substr($field, 11); // e.g., '1', '2', ...
-            $values[] = $_POST['ug_optional'.$index] ?? '';
-        } elseif (strpos($field, 'pg_optional') === 0) {
-            $index = substr($field, 11); // e.g., '1', '2', ...
-            $values[] = $_POST['pg_optional'.$index] ?? '';
+$fields = [
+    'form_no', 'admission_year', 'roll_no', 'id_card_no', 'religion', 'category', 'stream', 'course', 'medium', 'scholar_no', 'enrollment_no', 'gender', 'dob', 'candidate_name', 'father_name', 'father_occupation', 'mother_name', 'mother_occupation', 'permanent_address', 'correspondence_address', 'whatsapp', 'mobile', 'parents_mobile', 'last_institution', 'comp_sub', 'exam_name', 'exam_year', 'exam_sem', 'exam_board', 'exam_percentage', 'exam_compulsory', 'exam_optional',
+    'ug_optional1', 'ug_optional2', 'ug_optional3', 'ug_optional4', 'ug_optional5', 'ug_optional6',
+    'pg_optional1', 'pg_optional2', 'pg_optional3', 'pg_optional4', 'pg_optional5', 'pg_optional6',
+    'interests'
+];
+$values = [];
+foreach ($fields as $field) {
+    if ($field === 'interests') {
+        $values[] = isset($_POST['interests']) ? implode(',', $_POST['interests']) : '';
+    } elseif ($field === 'comp_sub') {
+        $values[] = isset($_POST['subjects']) ? implode(', ', $_POST['subjects']) : '';
+    } elseif ($field === 'exam_name') {
+        if (isset($_POST['last-exam']) && $_POST['last-exam'] === 'Other' && !empty($_POST['other'])) {
+            $values[] = $_POST['other'];
         } else {
-            $values[] = $_POST[$field] ?? '';
+            $values[] = $_POST['last-exam'] ?? '';
         }
+    } elseif (strpos($field, 'ug_optional') === 0) {
+        $index = substr($field, 11); // e.g., '1', '2', ...
+        $values[] = $_POST['ug_optional'.$index] ?? '';
+    } elseif (strpos($field, 'pg_optional') === 0) {
+        $index = substr($field, 11); // e.g., '1', '2', ...
+        $values[] = $_POST['pg_optional'.$index] ?? '';
+    } else {
+        $values[] = $_POST[$field] ?? '';
     }
+}
     $placeholders = rtrim(str_repeat('?,', count($fields)), ',');
     $sql = "INSERT INTO admissions (" . implode(',', $fields) . ") VALUES ($placeholders)";
     global $conn;
@@ -116,7 +118,7 @@ try {
         for ($i = 1; $i <= 6; $i++) {
             if (!empty($data["pg_optional$i"])) { $hasPGSubjects = true; break; }
         }
-        $hasSubjectsSection = $hasUGSubjects || $hasPGSubjects;
+        $hasSubjectsSection = !empty($data['comp_sub']) || $hasUGSubjects || $hasPGSubjects;
 
         $logoPath = $_SERVER['DOCUMENT_ROOT'] . '/admission/assets/images/logo.png';
         $type = pathinfo($logoPath, PATHINFO_EXTENSION);
@@ -260,35 +262,54 @@ try {
             </tbody>
         </table>';
 
-        if ($hasSubjectsSection) {
-            $html .= '<div class="section-header">SUBJECTS OFFERED</div>
-            <div class="subjects-section">';
-            if ($hasUGSubjects) {
-                $html .= '<div class="subject-column">
-                    <h4>UG Optional Subjects:</h4>
-                    <ul class="subject-list">';
-                for ($i = 1; $i <= 6; $i++) {
-                    $subject = $data["ug_optional$i"] ?? '';
-                    if (!empty($subject)) {
-                        $html .= '<li>' . htmlspecialchars($subject) . '</li>';
-                    }
-                }
-                $html .= '</ul></div>';
-            }
-            if ($hasPGSubjects) {
-                $html .= '<div class="subject-column">
-                    <h4>PG Optional Subjects:</h4>
-                    <ul class="subject-list">';
-                for ($i = 1; $i <= 6; $i++) {
-                    $subject = $data["pg_optional$i"] ?? '';
-                    if (!empty($subject)) {
-                        $html .= '<li>' . htmlspecialchars($subject) . '</li>';
-                    }
-                }
-                $html .= '</ul></div>';
-            }
-            $html .= '</div>';
+       if ($hasSubjectsSection) {
+    $html .= '<div class="section-header">SUBJECTS OFFERED</div>
+    <div class="subjects-section">';
+
+    // ✅ Compulsory UG Subjects
+    if (!empty($data['comp_sub'])) {
+        // This block adds the "UG Compulsory Subjects" section to the PDF
+        $compSubs = explode(',', $data['comp_sub']); // Convert back to array
+        $html .= '<div class="subject-column">
+            <h4>UG Compulsory Subjects:</h4>
+            <ul class="subject-list">';
+        foreach ($compSubs as $sub) {
+            $html .= '<li>' . htmlspecialchars(trim($sub)) . '</li>';
         }
+        $html .= '</ul></div>';
+    }
+
+    // ✅ UG Optional Subjects
+    if ($hasUGSubjects) {
+        $html .= '<div class="subject-column">
+            <h4>UG Optional Subjects:</h4>
+            <ul class="subject-list">';
+        for ($i = 1; $i <= 6; $i++) {
+            $subject = $data["ug_optional$i"] ?? '';
+            if (!empty($subject)) {
+                $html .= '<li>' . htmlspecialchars($subject) . '</li>';
+            }
+        }
+        $html .= '</ul></div>';
+    }
+
+    // ✅ PG Optional Subjects
+    if ($hasPGSubjects) {
+        $html .= '<div class="subject-column">
+            <h4>PG Optional Subjects:</h4>
+            <ul class="subject-list">';
+        for ($i = 1; $i <= 6; $i++) {
+            $subject = $data["pg_optional$i"] ?? '';
+            if (!empty($subject)) {
+                $html .= '<li>' . htmlspecialchars($subject) . '</li>';
+            }
+        }
+        $html .= '</ul></div>';
+    }
+
+    $html .= '</div>'; // End subjects-section
+}
+
 
         if ($hasInterests) {
             $html .= '<div class="section-header">PREFERENCE OF INTEREST</div>
@@ -312,16 +333,17 @@ try {
         // Prepare Email
         $mail = new PHPMailer(true);
         try {
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'help40617@gmail.com';
-            $mail->Password   = 'lrmuluhlzrohwvoq';
-            $mail->SMTPSecure = 'tls';
-            $mail->Port       = 587;
+    $mail->isSMTP();
+  $mail->Host       = 'mail.sgnkc.edu.in';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'admin.office@sgnkc.edu.in';
+    $mail->Password   = 'Noor@825';
+    $mail->SMTPSecure = 'tls';
+    $mail->Port       = 587;
 
-            $mail->setFrom('help40617@gmail.com', 'SGN Khalsa College');
-            $mail->addAddress('bhavishyakushwha123@gmail.com');
+
+    $mail->setFrom('admin.office@sgnkc.edu.in', 'SGN KHALSA NEW ADDMISSION DETAILS');
+    $mail->addAddress('admin.office@sgnkc.edu.in'); // Add recipient
 
             $mail->isHTML(true);
             $mail->Subject = "Admission Form Submission - {$form_no}";

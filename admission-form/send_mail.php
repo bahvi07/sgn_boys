@@ -1,5 +1,5 @@
 <?php
-require 'C:\\xampp\\vendor\\autoload.php';
+require 'vendor/autoload.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -11,7 +11,8 @@ $form_no = $_GET['form_no'] ?? $_POST['form_no'] ?? '';
 if (!$form_no) die("Form No is required.");
 
 // Fetch $data for the form_no from DB
-$mysqli = new mysqli("localhost", "root", "", "sgn_boys_db");
+$mysqli = new mysqli("localhost", "sgn_user", "DKC9=x.KLH&-", "sgn_boys_db");
+
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
@@ -45,7 +46,7 @@ for ($i = 1; $i <= 6; $i++) {
         break;
     }
 }
-$hasSubjectsSection = $hasUGSubjects || $hasPGSubjects;
+$hasSubjectsSection = !empty($data['comp_sub']) || $hasUGSubjects || $hasPGSubjects;
 
 $logoPath = $_SERVER['DOCUMENT_ROOT'] . '/admission/assets/images/logo.png';
 $type = pathinfo($logoPath, PATHINFO_EXTENSION);
@@ -190,10 +191,24 @@ $html = '
         </tr>
     </tbody>
 </table>';
-
 if ($hasSubjectsSection) {
     $html .= '<div class="section-header">SUBJECTS OFFERED</div>
     <div class="subjects-section">';
+
+    // ✅ Compulsory UG Subjects
+    if (!empty($data['comp_sub'])) {
+        // This block adds the "UG Compulsory Subjects" section to the PDF
+        $compSubs = explode(',', $data['comp_sub']); // Convert back to array
+        $html .= '<div class="subject-column">
+            <h4>UG Compulsory Subjects:</h4>
+            <ul class="subject-list">';
+        foreach ($compSubs as $sub) {
+            $html .= '<li>' . htmlspecialchars(trim($sub)) . '</li>';
+        }
+        $html .= '</ul></div>';
+    }
+
+    // ✅ UG Optional Subjects
     if ($hasUGSubjects) {
         $html .= '<div class="subject-column">
             <h4>UG Optional Subjects:</h4>
@@ -206,6 +221,8 @@ if ($hasSubjectsSection) {
         }
         $html .= '</ul></div>';
     }
+
+    // ✅ PG Optional Subjects
     if ($hasPGSubjects) {
         $html .= '<div class="subject-column">
             <h4>PG Optional Subjects:</h4>
@@ -218,8 +235,10 @@ if ($hasSubjectsSection) {
         }
         $html .= '</ul></div>';
     }
-    $html .= '</div>';
+
+    $html .= '</div>'; // End subjects-section
 }
+
 if ($hasInterests) {
     $html .= '<div class="section-header">PREFERENCE OF INTEREST</div>
     <table class="info-table">
@@ -243,15 +262,16 @@ $mail = new PHPMailer(true);
 try {
     //Server settings
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
+  $mail->Host       = 'mail.sgnkc.edu.in';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'help40617@gmail.com';
-    $mail->Password   = 'lrmuluhlzrohwvoq';
+    $mail->Username   = 'admin.office@sgnkc.edu.in';
+    $mail->Password   = 'Noor@825';
     $mail->SMTPSecure = 'tls';
     $mail->Port       = 587;
 
-    $mail->setFrom('help40617@gmail.com', 'SGN KHALSA NEW ADDMISSION DETAILS');
-    $mail->addAddress('bhavishyakushwha123@gmail.com'); // Add recipient
+
+    $mail->setFrom('admin.office@sgnkc.edu.in', 'SGN KHALSA NEW ADDMISSION DETAILS');
+    $mail->addAddress('admin.office@sgnkc.edu.in'); // Add recipient
 
     // Attachments
     $mail->addStringAttachment($pdfOutput, 'Admission_Form.pdf');
